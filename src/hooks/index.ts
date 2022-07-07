@@ -1,3 +1,3 @@
 import useTimer from './use-timer';
-
-export default { useTimer };
+// eslint-disable-next-line import/prefer-default-export
+export { useTimer };

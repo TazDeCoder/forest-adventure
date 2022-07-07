@@ -1,13 +1,11 @@
 import { useMemo, useState, useEffect } from 'react';
 import { Timer } from 'timer-node';
 
-type Props = {
-  options: {
-    format?: 'mm:ss';
-  };
+type Options = {
+  format?: 'mm:ss';
 };
 
-export default function useTimer({ options }: Props) {
+export default function useTimer({ format }: Options) {
   const timer = useMemo(() => {
     const newTimer = new Timer();
     newTimer.start();
@@ -22,7 +20,7 @@ export default function useTimer({ options }: Props) {
     if (timer.isRunning()) {
       let formatedTime = String(timer.ms());
 
-      if (options.format === 'mm:ss') {
+      if (format === 'mm:ss') {
         formatedTime = `${timer.format('%m').padStart(2, '0')} : ${timer
           .format('%s')
           .padStart(2, '0')}`;
@@ -38,7 +36,7 @@ export default function useTimer({ options }: Props) {
     return () => {
       clearInterval(interval);
     };
-  }, [timer, options.format]);
+  }, [timer, format]);
 
   return [time];
 }
