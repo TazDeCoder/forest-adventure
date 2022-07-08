@@ -12,15 +12,15 @@ import { FiMoon, FiSun } from 'react-icons/fi';
 import { motion } from 'framer-motion';
 
 import { useTimer } from '../../hooks/index';
+import { formatTime } from '../../lib/index';
 
 type Props = {
   isNight?: boolean;
   isPause?: boolean;
-  onPause?: () => void;
 };
 
-export default function Header({ isNight, isPause, onPause }: Props) {
-  const [time] = useTimer({ format: 'mm:ss' });
+export default function Header({ isNight, isPause }: Props) {
+  const { timer, pauseTimer } = useTimer({ immediateStart: true });
 
   const trigger = useScrollTrigger({
     disableHysteresis: true,
@@ -38,7 +38,7 @@ export default function Header({ isNight, isPause, onPause }: Props) {
       >
         <Toolbar sx={{ justifyContent: 'flex-end' }}>
           <Typography component="div" sx={{ flexGrow: 1 }} variant="h6">
-            {time}
+            {formatTime(timer, 'mm:ss')}
           </Typography>
           <IconButton
             sx={{ mr: 2 }}
@@ -46,8 +46,9 @@ export default function Header({ isNight, isPause, onPause }: Props) {
             edge="start"
             color="inherit"
             aria-label="pause"
+            onClick={pauseTimer}
           >
-            <PauseIcon onClick={onPause} />
+            <PauseIcon />
           </IconButton>
           {isNight ? <FiMoon /> : <FiSun />}
         </Toolbar>
@@ -59,5 +60,4 @@ export default function Header({ isNight, isPause, onPause }: Props) {
 Header.defaultProps = {
   isNight: false,
   isPause: false,
-  onPause: () => {},
 };
