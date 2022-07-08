@@ -1,11 +1,12 @@
-import React, { useEffect } from 'react';
-import { Box, Typography, Button } from '@mui/material';
-import { motion, useAnimation } from 'framer-motion';
+import React, { useCallback, useEffect } from 'react';
+import { Box } from '@mui/material';
+import { AnimatePresence, useAnimation } from 'framer-motion';
 
-type Prompt = {
-  title: string;
-  callback: () => any;
-};
+import { useTimer } from '../../hooks/index';
+import { TextReveal, ProgressCircle } from '../../animations/index';
+import { Prompt } from '../../interfaces';
+
+import ButtonChoices from './ButtonChoices';
 
 type Props = {
   text: string;
@@ -20,74 +21,53 @@ const boxStyles = {
   borderRadius: 5,
 };
 
-const buttonContainerStyles = {
-  display: 'flex',
-  justifyContent: 'center',
-  mt: '2em',
-};
-
-const sentenceVariants = {
-  hidden: {
-    opacity: 0.8,
-  },
-  visible: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.04,
-    },
-  },
-};
-
-const letterVariants = {
-  hidden: {
-    opacity: 0,
-  },
-  visible: {
-    opacity: 1,
-  },
-};
-
 export default function TextBlock({ text, prompts }: Props) {
+  const { timer, isActive, startTimer, stopTimer } = useTimer({});
   const sentenceControls = useAnimation();
   const buttonControls = useAnimation();
 
-  useEffect(() => {
-    const sequence = async () => {
-      await sentenceControls.start('visible');
-      buttonControls.start({ opacity: 1 });
-    };
+  const sequence = useCallback(async () => {
+    await sentenceControls.start('visible');
+    buttonControls.start({ opacity: 1 });
+    startTimer();
+    setTimeout(() => stopTimer(), 3000);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
+  useEffect(() => {
     sequence();
-  }, [sentenceControls, buttonControls]);
+  }, [sequence]);
 
   return (
     <Box sx={boxStyles}>
-      <Typography
-        component={motion.p}
-        variants={sentenceVariants}
-        initial="hidden"
-        animate={sentenceControls}
-      >
-        {text.split('').map((char, idx) => (
-          // eslint-disable-next-line react/no-array-index-key
-          <motion.span key={idx} variants={letterVariants}>
-            {char}
-          </motion.span>
-        ))}
-      </Typography>
       <Box
-        component={motion.div}
-        sx={buttonContainerStyles}
-        initial={{ opacity: 0 }}
-        animate={buttonControls}
-        transition={{ delay: 1.5 }}
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}
       >
-        {prompts.map((prompt, idx) => (
-          // eslint-disable-next-line react/no-array-index-key
-          <Button key={idx} sx={{ mx: 2 }} onClick={prompt.callback}>
-            {prompt.title}
-          </Button>
-        ))}
+        <TextReveal text={text} controls={sentenceControls} />
+        <Box
+          sx={{
+            position: 'relative',
+            height: '5rem',
+            mt: 4,
+            mb: 2,
+            ml: 1,
+            stroke: '#0000',
+          }}
+        >
+          <AnimatePresence>
+            {isActive && <ProgressCircle timer={timer} duration={3000} />}
+          </AnimatePresence>
+        </Box>
+        <ButtonChoices
+          choices={prompts}
+          controls={buttonControls}
+          disabled={!isActive}
+        />
       </Box>
     </Box>
   );
