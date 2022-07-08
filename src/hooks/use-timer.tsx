@@ -1,34 +1,38 @@
-import { useMemo, useState, useEffect } from 'react';
-import { Timer } from 'timer-node';
+import { useState, useEffect } from 'react';
 
 type Options = {
-  format?: 'mm:ss';
+  startAt?: number;
+  immediateStart?: boolean;
 };
 
-export default function useTimer({ format }: Options) {
-  const timer = useMemo(() => {
-    const newTimer = new Timer();
-    newTimer.start();
-    return newTimer;
-  }, []);
+export default function useTimer({
+  startAt = 0,
+  immediateStart = false,
+}: Options) {
+  const [timer, setTimer] = useState(startAt + 1);
+  const [isActive, setIsActive] = useState(immediateStart);
+  const [isPaused, setIsPaused] = useState(false);
 
-  const [time, setTime] = useState('');
+  const isActiveHandler = () => {
+    setIsActive(true);
+  };
+
+  const toggleIsPausedHandler = () => {
+    setIsPaused((prevState) => !prevState);
+  };
+
+  const stopHandler = () => {
+    setTimer(startAt);
+    setIsActive(false);
+    setIsPaused(false);
+  };
 
   useEffect(() => {
     let interval: any = null;
-
-    if (timer.isRunning()) {
-      let formatedTime = String(timer.ms());
-
-      if (format === 'mm:ss') {
-        formatedTime = `${timer.format('%m').padStart(2, '0')} : ${timer
-          .format('%s')
-          .padStart(2, '0')}`;
-      }
-
+    if (isActive && !isPaused) {
       interval = setInterval(() => {
-        setTime(formatedTime);
-      });
+        setTimer((prevTimer) => prevTimer + 1);
+      }, 1000);
     } else {
       clearInterval(interval);
     }
@@ -36,7 +40,14 @@ export default function useTimer({ format }: Options) {
     return () => {
       clearInterval(interval);
     };
-  }, [timer, format]);
+  }, [isActive, isPaused]);
 
-  return [time];
+  return {
+    timer,
+    isActive,
+    isPaused,
+    startTimer: isActiveHandler,
+    pauseTimer: toggleIsPausedHandler,
+    stopTimer: stopHandler,
+  };
 }
