@@ -2,6 +2,8 @@ import React from 'react';
 import { Typography } from '@mui/material';
 import { motion, AnimationControls } from 'framer-motion';
 
+import { TEXT_SPEED } from '../../constants';
+
 type Props = {
   text: string;
   controls: AnimationControls;
@@ -14,7 +16,7 @@ const sentenceVariants = {
   visible: {
     opacity: 1,
     transition: {
-      staggerChildren: 0,
+      staggerChildren: TEXT_SPEED,
     },
   },
 };
