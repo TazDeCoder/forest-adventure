@@ -2,7 +2,11 @@ import React from 'react';
 import { Typography } from '@mui/material';
 import { motion, AnimationControls } from 'framer-motion';
 
+import { TEXT_SPEED } from '../../constants';
+
 type Props = {
+  sx: any;
+  variant: any;
   text: string;
   controls: AnimationControls;
 };
@@ -14,7 +18,7 @@ const sentenceVariants = {
   visible: {
     opacity: 1,
     transition: {
-      staggerChildren: 0,
+      staggerChildren: TEXT_SPEED,
     },
   },
 };
@@ -28,10 +32,12 @@ const letterVariants = {
   },
 };
 
-export default function TextReveal({ text, controls }: Props) {
+export default function TextReveal({ sx, variant, text, controls }: Props) {
   return (
     <Typography
       component={motion.p}
+      sx={{ ...sx }}
+      variant={variant}
       variants={sentenceVariants}
       initial="hidden"
       animate={controls}
