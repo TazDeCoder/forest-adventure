@@ -1,7 +1,9 @@
-export interface Prompt {
-  id: string | number;
-  title: string;
-  value: string;
+export interface Choice {
+  id: number;
+  require: string[];
+  text: string;
+  items: string[];
+  next: number;
 }
 
 export interface Feedback {
@@ -10,7 +12,9 @@ export interface Feedback {
 }
 
 export interface PathNode {
-  value: string | number;
-  left: PathNode;
-  right: PathNode;
+  id: number;
+  text: string;
+  prompt: string;
+  choices: Choice[];
+  isNight: boolean;
 }
