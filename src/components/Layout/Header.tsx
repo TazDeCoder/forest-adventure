@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useContext, useEffect } from 'react';
 import {
   Box,
   AppBar,
@@ -14,18 +14,23 @@ import { motion } from 'framer-motion';
 import { useTimer } from '../../hooks/index';
 import { formatTime } from '../../lib/index';
 
-type Props = {
-  isNight?: boolean;
-  isPause?: boolean;
-};
+import GameContext from '../../store/GameProvider/game-context';
 
-export default function Header({ isNight, isPause }: Props) {
-  const { timer, pauseTimer } = useTimer({ immediateStart: true });
+export default function Header() {
+  const gameContext = useContext(GameContext);
+  const { timer, pauseTimer: togglePauseTimer } = useTimer({
+    immediateStart: true,
+  });
 
   const trigger = useScrollTrigger({
     disableHysteresis: true,
     threshold: 0,
   });
+
+  useEffect(() => {
+    togglePauseTimer();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [gameContext?.isPaused]);
 
   return (
     <Box component="header">
@@ -33,7 +38,7 @@ export default function Header({ isNight, isPause }: Props) {
         component={motion.div}
         sx={{ cursor: 'pointer' }}
         position="fixed"
-        animate={{ opacity: !isPause && trigger ? 0.2 : 1 }}
+        animate={{ opacity: !gameContext?.isPaused && trigger ? 0.2 : 1 }}
         whileHover={{ opacity: 1 }}
       >
         <Toolbar sx={{ justifyContent: 'flex-end' }}>
@@ -46,11 +51,11 @@ export default function Header({ isNight, isPause }: Props) {
             edge="start"
             color="inherit"
             aria-label="pause"
-            onClick={pauseTimer}
+            onClick={gameContext?.toggleIsPaused}
           >
             <PauseIcon />
           </IconButton>
-          {isNight ? <FiMoon /> : <FiSun />}
+          {gameContext?.isNight ? <FiMoon /> : <FiSun />}
         </Toolbar>
       </AppBar>
     </Box>
