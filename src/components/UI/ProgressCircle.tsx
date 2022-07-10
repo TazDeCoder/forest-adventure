@@ -1,6 +1,6 @@
-import React, { useMemo } from 'react';
+import React, { useEffect } from 'react';
 import { Typography } from '@mui/material';
-import { motion, useTime, useTransform, useSpring } from 'framer-motion';
+import { motion, useMotionValue, useTransform, useSpring } from 'framer-motion';
 
 type Props = {
   timer: number;
@@ -8,10 +8,14 @@ type Props = {
 };
 
 export default function Circle({ timer, duration }: Props) {
-  const durationSecs = useMemo(() => duration / 1000, [duration]);
-  const time = useTime();
+  const time = useMotionValue(0);
   const timeRange = useTransform(time, [0, duration], [0, 1]);
   const pathLength = useSpring(timeRange, { stiffness: 400, damping: 90 });
+
+  useEffect(() => {
+    time.set(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [timer]);
 
   return (
     <motion.div
@@ -29,7 +33,7 @@ export default function Circle({ timer, duration }: Props) {
         <motion.path
           fill="none"
           strokeWidth="2"
-          stroke="inherit"
+          stroke="grey"
           strokeDasharray="0 1"
           d="M 0, 20 a 20, 20 0 1,0 40,0 a 20, 20 0 1,0 -40,0"
           style={{
@@ -48,7 +52,7 @@ export default function Circle({ timer, duration }: Props) {
           left: 40,
         }}
       >
-        {durationSecs - timer}
+        {duration - timer}
       </Typography>
     </motion.div>
   );
