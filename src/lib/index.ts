@@ -1,3 +1,4 @@
 import formatTime from './formatTime';
-// eslint-disable-next-line import/prefer-default-export
-export { formatTime };
+import generateData from './generateData';
+
+export { formatTime, generateData };
