@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {
   Backdrop,
   Modal as ModalWindow,
@@ -9,32 +9,24 @@ import {
 } from '@mui/material';
 
 type Props = {
+  open: boolean;
   title: string;
   description: string;
   confirmText: string;
-  callback: () => void;
+  onClose: () => void;
 };
 
 export default function Modal({
+  open,
   title,
   description,
   confirmText,
-  callback,
+  onClose,
 }: Props) {
-  const [open, setOpen] = useState(true);
-
-  const closeHandler = () => setOpen(false);
-
-  const onClickHandler = () => {
-    setOpen(false);
-    callback();
-  };
-
   return (
     <div>
       <ModalWindow
         open={open}
-        onClose={closeHandler}
         aria-labelledby="modal-modal-title"
         aria-describedby="modal-modal-description"
         BackdropComponent={Backdrop}
@@ -68,7 +60,7 @@ export default function Modal({
             <Button
               sx={{ display: 'block', m: '2rem auto 1rem' }}
               variant="contained"
-              onClick={onClickHandler}
+              onClick={() => onClose()}
             >
               {confirmText}
             </Button>
